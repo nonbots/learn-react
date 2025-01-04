@@ -12,7 +12,11 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.square{
+p {
+  display: flex;
+  align-items: center;
+}
+.square {
   display: flex;
   border: 1px solid red;
   width: 30px;
