@@ -26,3 +26,13 @@ p {
 .row {
   display: flex;
 }
+
+ol {
+  display:flex;
+  row-gap: 1rem;
+  flex-direction: column;
+}
+
+li {
+  display:flex;
+}
