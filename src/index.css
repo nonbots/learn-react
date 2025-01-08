@@ -12,10 +12,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 p {
   display: flex;
   align-items: center;
 }
+
 .square {
   display: flex;
   border: 1px solid red;
@@ -23,16 +25,21 @@ p {
   height: 30px;
   justify-content: center;
 }
+
+.highlighted {
+  background-color: green;
+}
+
 .row {
   display: flex;
 }
 
 ol {
-  display:flex;
+  display: flex;
   row-gap: 1rem;
   flex-direction: column;
 }
 
 li {
-  display:flex;
+  display: flex;
 }
