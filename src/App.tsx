@@ -49,11 +49,11 @@ function App() {
   //Game component
   const [histories, setHistories] = useState([new Array(3).fill(undefined).map((_row) => new Array(3).fill(null))]);
   const [curMove, setMove] = useState(histories.length - 1);
-  const [winningSquares, setWinningSquares] = useState<number[][]>([]);
+  // const [winningSquares, setWinningSquares] = useState<number[][]>([]);
   const curBoard = histories[curMove];
   let player = curMove % 2 === 0;
   let curPlayerMark = player ? 'X' : 'O';
-  //const winningSquares = getWinningSquares(curBoard);
+  const winningSquares = getWinningSquares(curBoard);
   const winner = winningSquares.length > 0 ? curBoard[winningSquares[0][0]][winningSquares[0][1]] : 'No one';
 
   function handlePlay(nextBoard: string[][]): void {
@@ -65,8 +65,8 @@ function App() {
 
   function jumpTo(index: number) {
     setMove(index);
-    setWinningSquares(getWinningSquares(histories[index]));
-    //pass winningSquare to setWinngingSquares
+    //setWinningSquares(getWinningSquares(histories[index]));
+
   }
   const historyBtns = histories.map((_history, index) => {
     return index === curMove ? (
@@ -87,7 +87,7 @@ function App() {
   return (
     <>
       <p> Current Player: {curPlayerMark}</p>
-      <Board setWinningSquares={setWinningSquares} winningSquares={winningSquares} player={player} curBoard={curBoard} onPlay={(curBoard) => handlePlay(curBoard)} />
+      <Board winningSquares={winningSquares} player={player} curBoard={curBoard} onPlay={(curBoard) => handlePlay(curBoard)} />
       <p>{winner} won!</p>
       <button onClick={() => toggleSort()}> Sort </button>
       <ol>{historyBtns}</ol>
@@ -95,13 +95,11 @@ function App() {
   );
 }
 function Board({
-  setWinningSquares,
   winningSquares,
   player,
   curBoard,
   onPlay,
 }: {
-  setWinningSquares: React.Dispatch<React.SetStateAction<number[][]>>;
   winningSquares: number[][];
   player: boolean;
   curBoard: string[][];
@@ -117,10 +115,6 @@ function Board({
     const updatedBoard = structuredClone(curBoard);
     player ? (updatedBoard[row][col] = 'X') : (updatedBoard[row][col] = 'O');
     onPlay(updatedBoard);
-    const winningSquaresToSet = getWinningSquares(updatedBoard);
-    if (updatedBoard[row][col] || winningSquares.length > 0) {
-      setWinningSquares(winningSquaresToSet);
-    }
   }
 
   return (
