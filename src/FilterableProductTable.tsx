@@ -39,7 +39,8 @@ function transformToProductsByCat(products: Product[]): { [key: string]: Product
   return groupProducts;
 }
 
-function FilterableProductTable(products: Product[]) {
+function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
+  const { products } = props;
   const [filteredText, setFilteredText] = useState('');
   const [checkmark, setCheckmark] = useState(false);
   return (
