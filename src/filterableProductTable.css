@@ -7,3 +7,14 @@ th,
 td {
     border: 1px solid black;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+.stocked {
+    display: flex;
+
+}

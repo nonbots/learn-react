@@ -22,6 +22,7 @@ interface ProductTableProps {
   products: Product[];
   filteredText: string;
   checkmark: boolean;
+  deleteHandler: ((id: string) => void)
 }
 
 interface SearchBarProps {
@@ -40,13 +41,47 @@ function transformToProductsByCat(products: Product[]): { [key: string]: Product
 }
 
 function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
-  const { products } = props;
   const [filteredText, setFilteredText] = useState('');
   const [checkmark, setCheckmark] = useState(false);
+  const [products, setProducts] = useState(props.products);
+
+  function addHandler(formElement: HTMLFormElement) {
+
+    const formData = new FormData(formElement);
+    const newProduct = {
+      category: formData.get("category")?.toString() ?? "",
+      price: formData.get("price")?.toString() ?? "",
+      stocked: !!formData.get("stocked"),
+      name: formData.get("name")?.toString() ?? ""
+    }
+    setProducts([...products, newProduct]);
+  }
+
+  function deleteHandler(name: string): void {
+    const newProducts = [...products];
+    const index = newProducts.findIndex(product => product.name === name);
+    if (index !== -1) newProducts.splice(index, 1);
+    setProducts(newProducts);
+  }
+
+  function editHandler() { }
   return (
     <div className="table">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        addHandler(e.target as HTMLFormElement);
+      }}>
+        <input name="category" placeholder='category' />
+        <input name="price" placeholder='price' />
+        <input name="name" placeholder='name' />
+        <div className='stocked'>
+          <label>stocked</label>
+          <input type="checkbox" name="stocked" defaultChecked={true} />
+        </div>
+        <button type="submit">Add</button>
+      </form>
       <SearchBar setFilteredTextProp={setFilteredText} setCheckmarkProp={setCheckmark} />
-      <ProductTable products={products} filteredText={filteredText} checkmark={checkmark} />
+      <ProductTable products={products} filteredText={filteredText} checkmark={checkmark} deleteHandler={deleteHandler} />
     </div>
   );
 }
@@ -65,13 +100,21 @@ function SearchBar(props: SearchBarProps) {
 }
 
 function ProductTable(props: ProductTableProps) {
-  const { products, filteredText, checkmark } = props;
+  const { products, filteredText, checkmark, deleteHandler } = props;
   const filteredProducts = products.filter((product) => {
     const isCategory = product.category.startsWith(filteredText);
     return checkmark ? product.stocked && isCategory : isCategory;
+  }).sort((a, b) => {
+    if (a.name < b.name) {
+      return -1;
+    } else if (a.name > b.name) {
+      return 1;
+    } else {
+      return 0;
+    }
   });
   const filteredProductsObj = transformToProductsByCat(filteredProducts);
-  const categories = Object.keys(filteredProductsObj);
+  const categories = Object.keys(filteredProductsObj).sort();
   return (
     <table className="table">
       <thead>
@@ -90,7 +133,7 @@ function ProductTable(props: ProductTableProps) {
               {filteredProductsObj[categoryKey].map((product, index) => {
                 return (
                   <tr className="row" key={index}>
-                    <ProductRow name={product.name} price={product.price} />
+                    <ProductRow name={product.name} price={product.price} deleteHandler={deleteHandler} />
                   </tr>
                 );
               })}
@@ -106,11 +149,12 @@ function ProductCategory({ category }: { category: string }) {
   return <th colSpan={2}>{category}</th>;
 }
 
-function ProductRow({ name, price }: { name: string; price: string }) {
+function ProductRow({ name, price, deleteHandler }: { name: string; price: string; deleteHandler: (id: string) => void }) {
   return (
     <>
       <td>{name}</td>
       <td>{price}</td>
+      <button onClick={(e) => deleteHandler(name)}>Delete</button>
     </>
   );
 }
