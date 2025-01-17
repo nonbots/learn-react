@@ -29,6 +29,11 @@ interface SearchBarProps {
   setFilteredTextProp: React.Dispatch<React.SetStateAction<string>>;
   setCheckmarkProp: React.Dispatch<React.SetStateAction<boolean>>;
 }
+interface ProductRowProps {
+  name: string;
+  price: string;
+  deleteHandler: (id: string) => void
+}
 
 function transformToProductsByCat(products: Product[]): { [key: string]: Product[] } {
   const groupProducts: { [key: string]: Product[] } = {};
@@ -64,7 +69,6 @@ function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
     setProducts(newProducts);
   }
 
-  function editHandler() { }
   return (
     <div className="table">
       <form onSubmit={(e) => {
@@ -99,19 +103,13 @@ function SearchBar(props: SearchBarProps) {
   );
 }
 
-function ProductTable(props: ProductTableProps) {
-  const { products, filteredText, checkmark, deleteHandler } = props;
+function ProductTable({ products, filteredText, checkmark, deleteHandler }: ProductTableProps) {
   const filteredProducts = products.filter((product) => {
     const isCategory = product.category.startsWith(filteredText);
     return checkmark ? product.stocked && isCategory : isCategory;
   }).sort((a, b) => {
-    if (a.name < b.name) {
-      return -1;
-    } else if (a.name > b.name) {
-      return 1;
-    } else {
-      return 0;
-    }
+    if (a.name === b.name) return 0;
+    return a.name < b.name ? -1 : 1;
   });
   const filteredProductsObj = transformToProductsByCat(filteredProducts);
   const categories = Object.keys(filteredProductsObj).sort();
@@ -149,12 +147,12 @@ function ProductCategory({ category }: { category: string }) {
   return <th colSpan={2}>{category}</th>;
 }
 
-function ProductRow({ name, price, deleteHandler }: { name: string; price: string; deleteHandler: (id: string) => void }) {
+function ProductRow({ name, price, deleteHandler }: ProductRowProps) {
   return (
     <>
       <td>{name}</td>
       <td>{price}</td>
-      <button onClick={(e) => deleteHandler(name)}>Delete</button>
+      <button onClick={() => deleteHandler(name)}>Delete</button>
     </>
   );
 }
