@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-
+import React, { useState, useReducer } from 'react';
 const PRODUCTS = [
   { category: 'Vegetables', price: '$2', stocked: true, name: 'Green Beans' },
   { category: 'Fruits', price: '$1', stocked: true, name: 'Apple' },
@@ -45,10 +44,24 @@ function transformToProductsByCat(products: Product[]): { [key: string]: Product
   return groupProducts;
 }
 
+function productsReducer(products, action) {
+  switch (action.type) {
+    case "add": {
+
+    }
+    case "delete": {
+
+    }
+    default: {
+
+    }
+  }
+}
+
 function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
   const [filteredText, setFilteredText] = useState('');
   const [checkmark, setCheckmark] = useState(false);
-  const [products, setProducts] = useState(props.products);
+  const [products, setProducts] = useReducer(productsReducer, props.products);
 
   function addHandler(formElement: HTMLFormElement) {
 
