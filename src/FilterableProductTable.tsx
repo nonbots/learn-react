@@ -44,16 +44,16 @@ function transformToProductsByCat(products: Product[]): { [key: string]: Product
   return groupProducts;
 }
 
-function productsReducer(products, action) {
+function productsReducer(products: Product[], action: { type: "add", product: Product } | { type: "delete", products: Product[] }): Product[] {
   switch (action.type) {
     case "add": {
-
+      return [
+        ...products,
+        action.product
+      ]
     }
     case "delete": {
-
-    }
-    default: {
-
+      return action.products;
     }
   }
 }
@@ -61,10 +61,9 @@ function productsReducer(products, action) {
 function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
   const [filteredText, setFilteredText] = useState('');
   const [checkmark, setCheckmark] = useState(false);
-  const [products, setProducts] = useReducer(productsReducer, props.products);
+  const [products, dispatch] = useReducer(productsReducer, props.products);
 
   function addHandler(formElement: HTMLFormElement) {
-
     const formData = new FormData(formElement);
     const newProduct = {
       category: formData.get("category")?.toString() ?? "",
@@ -72,14 +71,20 @@ function FilterableProductTable(props: Pick<ProductTableProps, "products">) {
       stocked: !!formData.get("stocked"),
       name: formData.get("name")?.toString() ?? ""
     }
-    setProducts([...products, newProduct]);
+    dispatch({
+      type: 'add',
+      product: newProduct
+    });
   }
 
   function deleteHandler(name: string): void {
     const newProducts = [...products];
     const index = newProducts.findIndex(product => product.name === name);
     if (index !== -1) newProducts.splice(index, 1);
-    setProducts(newProducts);
+    dispatch({
+      type: 'delete',
+      products: newProducts
+    })
   }
 
   return (
